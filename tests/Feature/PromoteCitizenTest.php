@@ -57,7 +57,7 @@ class PromoteCitizenTest extends TestCase
         $citizen = Citizen::factory()->create();
         $response = $this->post(route('family.promote', ['family' => $family->id]), ['citizen_id' => $citizen->id]);
 
-        $response->assertStatus(404);
+        $response->assertStatus(400);
     }
 
     public function test_failing_promoting_for_invalid_citizen() {
