@@ -15,7 +15,7 @@ class Citizen extends Model
     public $timestamps = false;
 
     public function families() {
-        return $this->belongsToMany(Family::class)->withPivot('role');
+        return $this->belongsToMany(Family::class)->withPivot(['role', 'is_head']);
     }
 
     public function head_families() {

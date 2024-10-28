@@ -11,7 +11,7 @@ class Family extends Model
     protected $guarded = ['id'];
 
     public function citizens() {
-        return $this->belongsToMany(Citizen::class)->withPivot('role');
+        return $this->belongsToMany(Citizen::class)->withPivot(['role', 'is_head']);
     }
 
     public function head_citizen() {
