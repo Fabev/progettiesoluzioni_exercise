@@ -5,6 +5,10 @@ namespace App\Models;
 use App\Enumerations\FamilyRoles;
 use App\Exceptions\CannotLeaveFamily;
 use App\Exceptions\CannotLeaveAFamilyAsHead;
+use App\Exceptions\CannotPromoteAChildToHeadException;
+use App\Exceptions\CitizenIsNotPartOfTheFamilyException;
+use App\Exceptions\FamilyHasMoreThanSixMembersException;
+use App\Exceptions\MaximumFamiliesHeadException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -41,23 +45,31 @@ class Citizen extends Model
      * Join a family
      *
      * @param Family $family
-     * @param FamilyRoles $role
+     * @param FamilyRoles|string $role
      * @param bool $isHead
      * @return void
-     * @throws \App\Exceptions\CannotPromoteAChildToHeadException
-     * @throws \App\Exceptions\CitizenIsNotPartOfTheFamilyException
-     * @throws \App\Exceptions\FamilyHasMoreThanSixMembersException
-     * @throws \App\Exceptions\MaximumFamiliesHeadException
+     * @throws CannotPromoteAChildToHeadException
+     * @throws CitizenIsNotPartOfTheFamilyException
+     * @throws FamilyHasMoreThanSixMembersException
+     * @throws MaximumFamiliesHeadException
      */
-    public function join(Family $family, FamilyRoles $role, bool $isHead = false) : void {
+    public function join(Family $family, FamilyRoles|string $role, bool $isHead = false) : void {
         if (!$this->families()->where('id', $family->id)->exists())
-            $family->citizens()->attach($this->id, ['role' => $role->value, 'is_head' => false]);
+            $family->citizens()->attach($this->id, ['role' => is_string($role) ? $role : $role->value, 'is_head' => false]);
 
         if ($isHead)
             $family->promoteAsHead($this->id);
     }
 
-    public function leave(Family $family) {
+    /**
+     * Leave a family
+     *
+     * @param Family $family
+     * @return void
+     * @throws CannotLeaveAFamilyAsHead
+     * @throws CannotLeaveFamily
+     */
+    public function leave(Family $family, bool $is_moving = false): void {
         // if citizen is not part of the family, do nothing
         if (!($family = $this->families()->where('id', $family->id)->first()))
             return;
@@ -70,6 +82,7 @@ class Citizen extends Model
         if (($family->pivot->role === FamilyRoles::CHILD->value)
             && $family->citizens()->count() === 1
             && $this->families()->count() === 1
+            && !$is_moving
         )
             throw new CannotLeaveFamily();
 
