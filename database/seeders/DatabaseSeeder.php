@@ -20,6 +20,14 @@ class DatabaseSeeder extends Seeder
             ->count(10)
             ->create()
             ->each(function (Family $family) {
+                // attach head citizen
+                $head = Citizen::factory()->create();
+                $family->citizens()->attach($head, [
+                    'is_head' => true,
+                    'role' => FamilyRoles::getRandom(FamilyRoles::CHILD)
+                ]);
+
+                // attach other family members
                 $citizens = array();
                 for ($i = 0; $i < rand(1, 5); $i++) {   // max is 6 = head + 5 members
                     $citizen = Citizen::factory()->create();

@@ -15,6 +15,6 @@ class Family extends Model
     }
 
     public function head_citizen() {
-        return $this->belongsTo(Citizen::class, 'head_citizen_id');
+        return $this->citizens()->wherePivot('is_head',true)->first();
     }
 }

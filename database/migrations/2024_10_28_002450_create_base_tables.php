@@ -21,15 +21,13 @@ return new class extends Migration
 
         Schema::create('families', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('head_citizen_id');
             $table->timestamps();
-
-            $table->foreign('head_citizen_id')->references('id')->on('citizens');
         });
 
         Schema::create('citizen_family', function (Blueprint $table) {
             $table->foreignId('citizen_id')->constrained();
             $table->foreignId('family_id')->constrained();
+            $table->boolean('is_head')->default(false);
             $table->enum('role', ['parent', 'tutor', 'child']);
         });
     }
