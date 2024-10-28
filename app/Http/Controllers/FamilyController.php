@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\PromoteCitizenAsHeadRequest;
 use App\Http\Resources\FamilyResource;
+use App\Models\Citizen;
 use App\Models\Family;
 
 class FamilyController extends Controller
@@ -15,17 +16,32 @@ class FamilyController extends Controller
      * @param PromoteCitizenAsHeadRequest $request
      * @return FamilyResource|\Illuminate\Http\JsonResponse
      */
-    public function promote_head(Family $family, PromoteCitizenAsHeadRequest $request): \Illuminate\Http\JsonResponse|FamilyResource {
-        $validated = $request->validated();
-
-        if ($family->head_citizen()->id === $validated['citizen_id'])
+    public function promote_head(Family $family, Citizen $citizen): \Illuminate\Http\JsonResponse|FamilyResource {
+        if ($family->head_citizen()->id === $citizen->id)
             return new FamilyResource($family); // No need to promote - handling idempotence :)
 
         try {
-            $family->promoteAsHead($validated['citizen_id']);
+            $family->promoteAsHead($citizen->id);
         } catch (\Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }
+        return new FamilyResource($family);
+    }
+
+    /**
+     * Remove a citizen from the family
+     *
+     * @param Family $family
+     * @param Citizen $citizen
+     * @return FamilyResource|\Illuminate\Http\JsonResponse
+     */
+    public function remove(Family $family, Citizen $citizen) {
+        try {
+            $citizen->leave($family);
+        } catch (\Throwable $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+
         return new FamilyResource($family);
     }
 }

@@ -65,6 +65,7 @@ class Citizen extends Model
      * Leave a family
      *
      * @param Family $family
+     * @param bool $is_moving
      * @return void
      * @throws CannotLeaveAFamilyAsHead
      * @throws CannotLeaveFamily

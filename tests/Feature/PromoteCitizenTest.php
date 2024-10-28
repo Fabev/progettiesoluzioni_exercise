@@ -27,7 +27,7 @@ class PromoteCitizenTest extends TestCase
         $citizen = Citizen::factory()->create();
         $family->citizens()->attach($citizen->id, ['role' => FamilyRoles::getRandom(FamilyRoles::CHILD)]);
 
-        $response = $this->post(route('families.promote', ['family' => $family->id]), ['citizen_id' => $citizen->id]);
+        $response = $this->post(route('families.citizens.promote', ['family' => $family->id, 'citizen' => $citizen->id]));
 
         $response->assertStatus(200);
     }
@@ -42,7 +42,7 @@ class PromoteCitizenTest extends TestCase
         $citizen = Citizen::factory()->create();
         $family->citizens()->attach($citizen->id, ['role' => FamilyRoles::CHILD->value]);
 
-        $response = $this->post(route('families.promote', ['family' => $family->id]), ['citizen_id' => $citizen->id]);
+        $response = $this->post(route('families.citizens.promote', ['family' => $family->id, 'citizen' => $citizen->id]));
 
         $response->assertStatus(400);
     }
@@ -55,7 +55,7 @@ class PromoteCitizenTest extends TestCase
             )
             ->create();
         $citizen = Citizen::factory()->create();
-        $response = $this->post(route('families.promote', ['family' => $family->id]), ['citizen_id' => $citizen->id]);
+        $response = $this->post(route('families.citizens.promote', ['family' => $family->id, 'citizen' => $citizen->id]));
 
         $response->assertStatus(400);
     }
@@ -79,7 +79,7 @@ class PromoteCitizenTest extends TestCase
                 ->create();
         }
 
-        $response = $this->post(route('families.promote', ['family' => $family->id]), ['citizen_id' => $citizen->id]);
+        $response = $this->post(route('families.citizens.promote', ['family' => $family->id, 'citizen' => $citizen->id]));
 
         $response->assertStatus(400);
     }
