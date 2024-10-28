@@ -6,11 +6,12 @@ use App\Enumerations\FamilyRoles;
 use App\Models\Citizen;
 use App\Models\Family;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class JoinFamilyTest extends TestCase
 {
+    use RefreshDatabase;
+
     /**
      * A basic feature test example.
      */

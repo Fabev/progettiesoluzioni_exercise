@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class MoveCitizenTest extends TestCase {
+    use RefreshDatabase;
 
     /**
      * A basic feature test example.
