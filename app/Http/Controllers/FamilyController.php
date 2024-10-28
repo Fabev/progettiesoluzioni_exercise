@@ -9,6 +9,13 @@ use App\Models\Family;
 
 class FamilyController extends Controller
 {
+    /**
+     * Promote a citizen as head of the family
+     *
+     * @param Family $family
+     * @param PromoteCitizenAsHeadRequest $request
+     * @return FamilyResource|\Illuminate\Http\JsonResponse
+     */
     public function promote_head(Family $family, PromoteCitizenAsHeadRequest $request) {
         $validated = $request->validated();
 
