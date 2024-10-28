@@ -17,4 +17,15 @@ class Family extends Model
     public function head_citizen() {
         return $this->citizens()->wherePivot('is_head',true)->first();
     }
+
+    /**
+     * Promote a citizen as head of the family
+     *
+     * @param Citizen $citizen
+     * @return bool
+     */
+    public function promoteAsHead(Citizen $citizen) : bool {
+        $this->head_citizen()->pivot->update(['is_head' => false]);
+        return $citizen->pivot->update(['is_head' => true]);
+    }
 }
