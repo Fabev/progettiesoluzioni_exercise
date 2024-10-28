@@ -2,9 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Enumerations\FamilyRoles;
 use Illuminate\Foundation\Http\FormRequest;
 
-class PromoteCitizenAsHeadRequest extends FormRequest
+class JoinFamilyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,6 +24,7 @@ class PromoteCitizenAsHeadRequest extends FormRequest
     {
         return [
             'citizen_id' => 'required|exists:citizens,id',
+            'role' => 'required|in:' . implode(',', array_column(FamilyRoles::cases(), 'value')),
         ];
     }
 }

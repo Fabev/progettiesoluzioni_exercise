@@ -8,6 +8,7 @@ use App\Exceptions\CannotLeaveAFamilyAsHead;
 use App\Exceptions\CannotPromoteAChildToHeadException;
 use App\Exceptions\CitizenIsNotPartOfTheFamilyException;
 use App\Exceptions\FamilyHasMoreThanSixMembersException;
+use App\Exceptions\FamilyIsFullException;
 use App\Exceptions\MaximumFamiliesHeadException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,10 +53,18 @@ class Citizen extends Model
      * @throws CitizenIsNotPartOfTheFamilyException
      * @throws FamilyHasMoreThanSixMembersException
      * @throws MaximumFamiliesHeadException
+     * @throws FamilyIsFullException
      */
     public function join(Family $family, FamilyRoles|string $role, bool $isHead = false) : void {
-        if (!$this->families()->where('id', $family->id)->exists())
+        if (!$this->families()->where('id', $family->id)->exists()){
+
+            if ($family->head_citizen()->pivot->role === FamilyRoles::PARENT->value     // if the head of the family is a parent
+                && $family->citizens()->count() === 6                                   // can only handle 6 family members
+            )
+                throw new FamilyIsFullException();
+
             $family->citizens()->attach($this->id, ['role' => is_string($role) ? $role : $role->value, 'is_head' => false]);
+        }
 
         if ($isHead)
             $family->promoteAsHead($this->id);

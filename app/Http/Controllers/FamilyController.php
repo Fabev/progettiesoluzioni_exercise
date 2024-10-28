@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\JoinFamilyRequest;
 use App\Http\Requests\PromoteCitizenAsHeadRequest;
 use App\Http\Resources\FamilyResource;
 use App\Models\Citizen;
@@ -38,6 +39,18 @@ class FamilyController extends Controller
     public function remove(Family $family, Citizen $citizen) {
         try {
             $citizen->leave($family);
+        } catch (\Throwable $exception) {
+            return response()->json(['message' => $exception->getMessage()], 400);
+        }
+
+        return new FamilyResource($family);
+    }
+
+    public function join(Family $family, JoinFamilyRequest $request) {
+        $validated = $request->validated();
+        $citizen = Citizen::find($validated['citizen_id']);
+        try {
+            $citizen->join($family, $validated['role']);
         } catch (\Throwable $exception) {
             return response()->json(['message' => $exception->getMessage()], 400);
         }

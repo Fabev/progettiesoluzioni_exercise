@@ -8,6 +8,7 @@ Route::prefix('/families')->name('families.')->group(function () {
     Route::prefix('/{family}')->group(function () {
 
        Route::prefix('/citizens')->name('citizens.')->group(function () {
+           Route::post('/', [\App\Http\Controllers\FamilyController::class, 'join'])->name('join');
 
            Route::prefix('/{citizen}')->group(function () {
                Route::post('/promote', [\App\Http\Controllers\FamilyController::class, 'promote_head'])->name('promote');
